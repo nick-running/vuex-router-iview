@@ -1,7 +1,6 @@
 <template>
     <div>
         <!-- -&ndash;&gt;{{tempDateRangeStrRangeStr}}-->
-        <h1>技巧攻略分享</h1>
         <Form ref="formInline" inline>
             <FormItem>
                 <DatePicker @on-ok="onDateConfirmed" @on-change="tempDateRangeStr = $event" type="datetimerange"
@@ -21,11 +20,6 @@
                 </Select>
             </FormItem>
             <FormItem>
-                <Select v-model="condTypes.statNum" @on-change="fetchChartData" size="small" style="width:150px">
-                    <Option v-for="item in statNumList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                </Select>
-            </FormItem>
-            <FormItem>
                 <Select v-model="condTypes.host_note" @on-change="fetchChartData" size="small" style="width:150px">
                     <Option v-for="item in hostNoteList" :value="item.value" :key="item.value">{{ item.label }}</Option>
                 </Select>
@@ -37,7 +31,7 @@
                 </Select>
             </FormItem>
             <FormItem>
-                <router-link to="/sill-add">
+                <router-link to="/skills/sill-add">
                     <Button type="primary" icon="plus" size="small">新增</Button>
                 </router-link>
             </FormItem>
@@ -61,7 +55,6 @@
         condTypes: {
           dateTimeRange: null,
           sort: 'DESC', // 统计对象
-          statNum: 10, // 统计对象
           statistical_object: 'bps', // 统计对象
           host_note: 'host', // 主机节点
           statWay: 'bar', // 展现方式
@@ -99,8 +92,8 @@
           ],
           data: [
             {
-              'title': '跳一跳原创分享技巧',
-              'summary': '跳一跳原创分享技巧'
+              'title': 'summary原创分享jjjj',
+              'summary': 'summary原创分享jjjj'
             }
           ]
         }
@@ -132,7 +125,6 @@
           data: {
             statistical_object: _this.condTypes.statistical_object,
             sort: _this.condTypes.sort,
-            num: _this.condTypes.statNum,
             host_note: _this.condTypes.host_note,
           }
         }).then((data) => {
@@ -189,10 +181,6 @@
       },
       statWayList() {
         return this.$store.state.conditions.statWayList
-      },
-      statNumList() {
-        // return this.$store.state.conditions.statNumList
-        return this.$store.getters.getStatNumList({startNum: 10, stepNum: 10, maxNum: 20})
       }
     },
     mounted() {

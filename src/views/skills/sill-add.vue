@@ -1,7 +1,6 @@
 <template>
     <div>
         <Row>
-            <h1>技巧新增</h1>
             <Col offset="6" span="12">
                 <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
                 <FormItem label="标题" prop="name">

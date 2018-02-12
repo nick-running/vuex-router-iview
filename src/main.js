@@ -64,14 +64,19 @@ axios.interceptors.response.use(function (response) {
 });
 Vue.prototype.$axios = axios
 router.beforeEach((to, from, next) => {
-    iView.LoadingBar.start();
-    Util.title(to.meta.title);
-    next();
+  iView.LoadingBar.start();
+  // console.log(next)
+  // console.log(`to data:`)
+  router.app.$options.store.commit('breadcrumbUpdate', to.matched.map((item)=>{return item.meta.title}))
+  Util.title(to.meta.title);
+  next();
 });
 
 router.afterEach((to, from, next) => {
-    iView.LoadingBar.finish();
-    window.scrollTo(0, 0);
+  iView.LoadingBar.finish();
+  // console.log('loaded.')
+  // console.log(router.app.$options.store.state.breadcrumbList)
+  window.scrollTo(0, 0);
 });
 
 vueInstance = new Vue({
