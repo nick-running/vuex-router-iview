@@ -1,5 +1,11 @@
 export default {
   state: {
+    // 动态条件，第一次访问时需要Ajax加载
+    classifyList: [],
+
+    // 动态条件，每次访问需要重新Ajax请求
+
+    // 静态条件
     sortByList: [ // 按最高还是最低排序
       {label: '最高的', value: 'DESC'},
       {label: '最低的', value: 'ASC'}

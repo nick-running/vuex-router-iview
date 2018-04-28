@@ -45,7 +45,7 @@
 
 <script>
   export default {
-    name: "history_full_web_host_traffic_topN",
+    name: "skill_list",
     data() {
       return {
         chart: null,
@@ -64,15 +64,22 @@
           header: [
             {
               title: '标题',
-              key: 'title'
+              key: 'name'
             },
             {
-              title: '摘要',
-              key: 'summary'
+              title: '分类',
+              width: 150,
+              render: (h, params) =>{
+                return params.row.classify.name
+              }
             },
+            // {
+            //   title: '摘要',
+            //   key: 'summary'
+            // },
             {
               title: '操作',
-              width: 150,
+              width: 120,
               render: (h, params) => {
                 return h('div', [
                   h('Button', {
@@ -91,10 +98,10 @@
             }
           ],
           data: [
-            {
-              'title': 'summary原创分享jjjj',
-              'summary': 'summary原创分享jjjj'
-            }
+            // {
+            //   'name': 'summary原创分享技巧',
+            //   'summary': 'summary原创分享技巧'
+            // }
           ]
         }
       }
@@ -115,58 +122,19 @@
       },
       fetchChartData() {
         const _this = this
-        _this.$store.dispatch('fetchStat', {
-          vueInstance: _this,
-          chartInstance: _this.chart,
-          url: this.$url.V_HFWHTTN_LIST,
-          preData: { // 需要预处理数据
-            dateTimeRange: _this.condTypes.dateTimeRange
-          },
-          data: {
-            statistical_object: _this.condTypes.statistical_object,
-            sort: _this.condTypes.sort,
-            host_note: _this.condTypes.host_note,
+        _this.$axios({
+          method: 'post',
+          url: this.$url.PRODUCT_LIST,
+        }).then((resp)=>{
+          if(!resp.data.errno) {
+            _this.tableData.data = resp.data.data
+          }else{
+            this.$Message.success('获取列表失败!');
           }
-        }).then((data) => {
-          _this.chartData = data.statInfo || []
-          _this.renderTable()
-        }).catch(function () {
-          _this.chartData = []
-          _this.renderTable()
+        }).catch((err)=>{
+          console.error(err)
+          this.$Message.fail('新增失败！');
         })
-      },
-      renderTable() {
-        const _this = this
-        // _this.tableData.header
-        let colList = [], headers = {
-          header1: {title: '', key: ''},
-          header2: {title: '', key: ''},
-          header3: {title: '', key: ''}
-        }
-        if (_this.chartData.length) {
-          for (let obj in _this.chartData[0]) {
-            if (obj === 'title') {
-              headers.header1.key = obj
-            } else if (obj === 'host' || obj === 'node') {
-              headers.header2.key = obj
-            } else if (obj === 'bps' || obj === 'pps' || obj === 'flows') {
-              headers.header3.key = obj
-            }
-          }
-          colList = _this.chartData.map((item) => {
-            return {
-              [headers.header1.key]: item._id || '',
-              [headers.header2.key]: item.host || item.node || '',
-              [headers.header3.key]: item.bps || item.pps || item.flows || ''
-            }
-          })
-        }
-        _this.tableData.header = [
-          {title: _this.$dict[headers.header1.key], key: headers.header1.key},
-          {title: _this.$dict[headers.header2.key], key: headers.header2.key},
-          {title: _this.$dict[headers.header3.key], key: headers.header3.key}
-        ]
-        _this.tableData.data = colList
       }
     },
     computed: {
@@ -187,6 +155,7 @@
       const _this = this
     },
     created() {
+      this.fetchChartData()
 
     }
   }

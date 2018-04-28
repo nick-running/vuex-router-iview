@@ -42,14 +42,13 @@
                         <Submenu name="2">
                             <template slot="title">
                                 <Icon type="ios-paper"></Icon>
-                                可视化
+                                技巧管理
                             </template>
-                            <MenuItem name="2-1">menu1sub1</MenuItem>
-                            <MenuItem name="2-2">menu1sub2</MenuItem>
+                            <MenuItem name="2-1">技巧列表</MenuItem>
                         </Submenu>
                         <MenuItem name="1-3">
                             <Icon type="ios-analytics-outline"></Icon>
-                            <span>分析</span>
+                            <span>分类</span>
                         </MenuItem>
                         <MenuItem name="1-4">
                             <Icon type="android-options"></Icon>
@@ -102,6 +101,9 @@
     methods: {
       menuSelect(name){
         switch (name){
+          case '1-3':
+            this.$router.push('/skills/classify')
+            break
           case 'h-2':
             this.$router.push('/settings')
             break

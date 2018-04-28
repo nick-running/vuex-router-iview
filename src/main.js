@@ -11,6 +11,11 @@ import 'iview/dist/styles/iview.css';
 import url from './api/urls'
 import dict from './api/dict'
 
+import './libs/UE/ueditor.config.js'
+import './libs/UE/ueditor.all.min.js'
+import './libs/UE/lang/zh-cn/zh-cn.js'
+import './libs/UE/ueditor.parse.min.js'
+
 Vue.use(VueRouter);
 Vue.use(iView);
 Vue.use(Vuex)
@@ -67,7 +72,11 @@ router.beforeEach((to, from, next) => {
   iView.LoadingBar.start();
   // console.log(next)
   // console.log(`to data:`)
-  router.app.$options.store.commit('breadcrumbUpdate', to.matched.map((item)=>{return item.meta.title}))
+  router.app.$options.store.commit('breadcrumbUpdate', to.matched.map((item)=>{
+    // console.log('item is:')
+    // console.log(item)
+    return item.meta.title
+  }))
   Util.title(to.meta.title);
   next();
 });

@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-import qs from 'qs'
 
 import conditions from './modules/conditions'
 import webSocket from './modules/websocket'
@@ -50,23 +49,33 @@ export default new Vuex.Store({
     },
     navUpdate(state, index) {
       state.navIndex = index
+    },
+    setClassifyCond(state, classifyList){
+      state.conditions.classifyList = classifyList
     }
   },
   actions: {
-    increment (context, params) {
-      // console.log('params is:');
-      // console.log(params);
-      context.commit('notifyOrder', params.msg)
-      setTimeout(function () {
-        context.commit('notifyOrder', 0)
-      },2000)
+    setClassifyCond(context, params) {
+      const vueInstance = params.vueInstance
+      vueInstance.$axios({
+        method: 'post',
+        url: vueInstance.$url.CLASSIFY_LIST,
+      }).then((resp)=>{
+        if(!resp.data.errno) {
+          if(resp.data.data.length>0) {
+            context.commit('setClassifyCond', resp.data.data.map(item=>{return {label: item.name, value: item.id}}))
+          }
+        }else{
+          vueInstance.$Message.info(resp.data.msg);
+          console.log(resp.data.msg)
+        }
+      }).catch(function (err) {
+        vueInstance.$Message.error(err.message)
+        console.log('err.message is:')
+        console.log(err.message)
+      });
     },
     fetchStat(context, params) {
-      if(params.chartInstance) params.chartInstance.showLoading({
-        color: '#ff9900',
-        textColor: '#fff',
-        maskColor: 'rgba(0, 0, 0, 0.6)'
-      })
       if(params.preData&&params.preData.dateTimeRange&&params.preData.dateTimeRange[0]) {
         params.data.startTime = params.vueInstance.$moment(params.preData.dateTimeRange[0]).format('YYYY-MM-DD HH:mm:ss')
         params.data.endTime = params.vueInstance.$moment(params.preData.dateTimeRange[1]).format('YYYY-MM-DD HH:mm:ss')
@@ -75,18 +84,10 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         axios({
           method: 'post',
-          data: qs.stringify(params.data),
+          data: params.data,
           url: params.url,
         }).then((resp)=>{
-          const diff = (new Date()-loadStartTime) // 人性化设置隐藏加载框
-          if(params.chartInstance) {
-            setTimeout(function () {
-              params.chartInstance.hideLoading()
-            }, 600-diff)
-          }
-          // console.log('resp is:')
-          // console.log(resp.data.statInfo)
-          if(resp.data.issucess) {
+          if(!resp.data.errno) {
             resolve(resp.data)
           }else{
             resolve(resp.data)
@@ -105,7 +106,6 @@ export default new Vuex.Store({
             console.log('Error', err.message);
           }
           if(err.message.indexOf('exceeded')!==-1){
-            params.chartInstance.hideLoading()
             // params.vueInstance.$Message.error('请求超时')
           // }else{
             params.vueInstance.$Message.error(err.message)
